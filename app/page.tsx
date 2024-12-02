@@ -1,5 +1,4 @@
-"use client"; // This ensures this file is client-side
-
+"use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -11,22 +10,27 @@ const HomePage = () => {
   useEffect(() => {
     // Check if window is defined (this is client-side rendering check)
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("accessToken");
+      const token = localStorage.getItem("jwt_token");
+
       if (token) {
+        console.log(token);
+        // Fetch the user details from the server if token exists
         axios
-          .get("http://localhost:8080/auth/me", {
+          .get("http://localhost:8080/auth-v2/me", {
             headers: { Authorization: `Bearer ${token}` },
           })
           .then((response) => {
-            setUser(response.data); // Ensure your API response includes a 'username'
+            setUser(response.data); // Ensure your API response includes 'username'
           })
           .catch((error) => {
             console.error("Error fetching user info:", error);
             setUser(null); // Clear user in case of error
           });
+      } else {
+        setUser(null); // No token, clear user info
       }
     }
-  }, []);
+  }, []); // Runs only once when the component mounts
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -46,7 +50,7 @@ const HomePage = () => {
             Home
           </button>
           <button
-            onClick={() => router.push("/book")}
+            onClick={() => router.push("/Booking")}
             className="hover:bg-gray-700 px-3 py-2 rounded-md"
           >
             Book
